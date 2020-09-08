@@ -68,10 +68,10 @@ public class MovieResource {
         return Response.ok().entity(GSON.toJson(FACADE.getMoviesByYear(year))).build();
     }
     
-    @Path("title")
+    @Path("title/{title}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMovieByTitle(@QueryParam("t") String title) {
+    public Response getMovieByTitle(@PathParam("title") String title) {
         return Response.ok().entity(GSON.toJson(FACADE.getMoviesByTitle(title))).build();
     }
     

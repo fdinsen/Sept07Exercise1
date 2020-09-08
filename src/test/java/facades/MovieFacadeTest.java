@@ -20,11 +20,7 @@ public class MovieFacadeTest {
     private static EntityManagerFactory emf;
     private static MovieFacade facade;
     
-    private static Movie m1;
-    private static Movie m2;
-    private static Movie m3;
-    private static Movie m4;
-    private static Movie m5;
+    private static Movie m1, m2, m3, m4, m5;
 
     public MovieFacadeTest() {
     }
