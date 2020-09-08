@@ -19,6 +19,12 @@ public class MovieFacadeTest {
 
     private static EntityManagerFactory emf;
     private static MovieFacade facade;
+    
+    private static Movie m1;
+    private static Movie m2;
+    private static Movie m3;
+    private static Movie m4;
+    private static Movie m5;
 
     public MovieFacadeTest() {
     }
@@ -39,19 +45,19 @@ public class MovieFacadeTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
+        m1 = new Movie("The Shining", "Stanley Kubrick", 146, 1980);
+        m2 = new Movie("Doctor Sleep", "Mike Flanagan", 152 , 2019);
+        m3 = new Movie("The Shining", "Mick Garris", 273 , 1997);
+        m4 = new Movie("2001: A Space Oddysey", "Stanley Kubrick", 164 , 1968);
+        m5 = new Movie("Perfect Blue", "Satoshi Kon", 90 , 1997);
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Movie.deleteAllRows").executeUpdate();
-            em.persist(new Movie("The Shining", "Stanley Kubrick", 146, 1980));
-            em.persist(new Movie("Doctor Sleep", "Mike Flanagan", 152 , 2019));
-            em.persist(new Movie("The Shining", "Mick Garris", 273 , 1997));
-            em.persist(new Movie("2001: A Space Oddysey", "Stanley Kubrick", 164 , 1968));
-            
-            //Making sure this'll be the last movie, makes database more predictable
-            em.getTransaction().commit();
-            em.getTransaction().begin();
-            em.persist(new Movie("Perfect Blue", "Satoshi Kon", 90 , 1997));
-
+            em.persist(m1);
+            em.persist(m2);
+            em.persist(m3);
+            em.persist(m4);
+            em.persist(m5);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -63,6 +69,38 @@ public class MovieFacadeTest {
 //        Remove any data after each test was run
     }
 
+    @Test
+    public void testGetMovieById() {
+        String expectedTitle = m5.getTitle();
+        String expectedDirector = m5.getDirector();
+        int expectedRuntime = m5.getRuntime();
+        int expectedYear = m5.getReleaseYear();
+        
+        MovieDTO movie = facade.getMovieById(m5.getId());
+        
+        assertEquals(expectedTitle, movie.getTitle());
+        assertEquals(expectedDirector, movie.getDirector());
+        assertEquals(expectedRuntime, movie.getRuntime());
+        assertEquals(expectedYear, movie.getReleaseYear());
+    }
+    
+    @Test
+    public void testAddMovie() {
+        String title = "Twin Peaks: Fire Walk With Me";
+        String director = "David Lynch";
+        int runtime = 135;
+        int year = 1992;
+        
+        facade.addMovie(title, director, runtime, year);
+       
+        MovieDTO movie = facade.getMoviesByDirector("David Lynch").get(0); 
+        
+        assertEquals(title, movie.getTitle());
+        assertEquals(director, movie.getDirector());
+        assertEquals(runtime, movie.getRuntime());
+        assertEquals(year, movie.getReleaseYear());
+    }
+    
     @Test
     public void testNumberOfMovies() {
         assertEquals(5, facade.getMovieCount(), "Expects five rows in the database");
@@ -79,18 +117,43 @@ public class MovieFacadeTest {
     }
     
     @Test
-    public void testGetAllMoviesByLastElement() {
-        String expectedTitle = "Perfect Blue";
-        String expectedDirector = "Satoshi Kon";
-        int expectedRuntime = 90;
-        int expectedYear = 1997;
+    public void testGetAllMoviesOnAllElements() {
+        //Rigtig grim løsning, men nu gider jeg ikke tænke mere over det.
+        for(MovieDTO movie : facade.getAllMovies()) {
+            switch(movie.getRuntime()) {
+                case 146:
+                    assertEquals(m1.getTitle(), movie.getTitle());
+                    assertEquals(m1.getDirector(), movie.getDirector());
+                    assertEquals(m1.getRuntime(), movie.getRuntime());
+                    assertEquals(m1.getReleaseYear(), movie.getReleaseYear());
+                    break;
+                case 152:
+                    assertEquals(m2.getTitle(), movie.getTitle());
+                    assertEquals(m2.getDirector(), movie.getDirector());
+                    assertEquals(m2.getRuntime(), movie.getRuntime());
+                    assertEquals(m2.getReleaseYear(), movie.getReleaseYear());
+                    break;
+                case 273:
+                    assertEquals(m3.getTitle(), movie.getTitle());
+                    assertEquals(m3.getDirector(), movie.getDirector());
+                    assertEquals(m3.getRuntime(), movie.getRuntime());
+                    assertEquals(m3.getReleaseYear(), movie.getReleaseYear());
+                    break;
+                case 164:
+                    assertEquals(m4.getTitle(), movie.getTitle());
+                    assertEquals(m4.getDirector(), movie.getDirector());
+                    assertEquals(m4.getRuntime(), movie.getRuntime());
+                    assertEquals(m4.getReleaseYear(), movie.getReleaseYear());
+                    break;
+                case 90:
+                    assertEquals(m5.getTitle(), movie.getTitle());
+                    assertEquals(m5.getDirector(), movie.getDirector());
+                    assertEquals(m5.getRuntime(), movie.getRuntime());
+                    assertEquals(m5.getReleaseYear(), movie.getReleaseYear());
+                    break;
+            }
+        }
         
-        MovieDTO actualLastElement = facade.getAllMovies().get(4);
-        
-        assertEquals(expectedTitle, actualLastElement.getTitle());
-        assertEquals(expectedDirector, actualLastElement.getDirector());
-        assertEquals(expectedRuntime, actualLastElement.getRuntime());
-        assertEquals(expectedYear, actualLastElement.getReleaseYear());
     }
     
     @Test
@@ -151,40 +214,5 @@ public class MovieFacadeTest {
         int actualSize = facade.getMoviesByYear(yearToGet).size();
         
         assertEquals(expectedSize, actualSize);
-    }
-    
-    @Test
-    public void testGetMovieById() {
-        int idToCheck = 5;
-        String expectedTitle = "Perfect Blue";
-        String expectedDirector = "Satoshi Kon";
-        int expectedRuntime = 90;
-        int expectedYear = 1997;
-        
-        MovieDTO movie = facade.getMovieById(idToCheck);
-        
-        assertEquals(expectedTitle, movie.getTitle());
-        assertEquals(expectedDirector, movie.getDirector());
-        assertEquals(expectedRuntime, movie.getRuntime());
-        assertEquals(expectedYear, movie.getReleaseYear());
-    }
-    
-    @Test
-    public void testAddMovie() {
-        String title = "Twin Peaks: Fire Walk With Me";
-        String director = "David Lynch";
-        int runtime = 135;
-        int year = 1992;
-        
-        facade.addMovie(title, director, runtime, year);
-        
-        //At this point in the tests, the database will have been cleaned and 
-        // refilled multiple times, so the ids have progressed quite far
-        MovieDTO movie = facade.getMovieById(21); 
-        
-        assertEquals(title, movie.getTitle());
-        assertEquals(director, movie.getDirector());
-        assertEquals(runtime, movie.getRuntime());
-        assertEquals(year, movie.getReleaseYear());
-    }
+    }   
 }

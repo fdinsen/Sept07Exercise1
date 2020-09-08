@@ -68,7 +68,7 @@ public class MovieFacade {
     public List<MovieDTO> getMoviesByTitle(String title) {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m WHERE m.title = :title", Movie.class);
+            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m WHERE m.title LIKE :title", Movie.class);
             query.setParameter("title", title);
             List<MovieDTO> listOfMovies = new ArrayList();
             query.getResultList().stream().forEach(m -> {
@@ -83,7 +83,7 @@ public class MovieFacade {
     public List<MovieDTO> getMoviesByDirector(String director) {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m WHERE m.director = :director", Movie.class);
+            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m WHERE m.director LIKE :director", Movie.class);
             query.setParameter("director", director);
             List<MovieDTO> listOfMovies = new ArrayList();
             query.getResultList().stream().forEach(m -> {
@@ -98,7 +98,7 @@ public class MovieFacade {
     public List<MovieDTO> getMoviesByYear(int releaseYear) {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m WHERE m.releaseYear = :releaseYear", Movie.class);
+            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m WHERE m.releaseYear LIKE :releaseYear", Movie.class);
             query.setParameter("releaseYear", releaseYear);
             List<MovieDTO> listOfMovies = new ArrayList();
             query.getResultList().stream().forEach(m -> {
@@ -113,7 +113,7 @@ public class MovieFacade {
     public MovieDTO getMovieById(long id) {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m WHERE m.id = :id", Movie.class);
+            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m WHERE m.id LIKE :id", Movie.class);
             query.setParameter("id", id);
             MovieDTO movie = new MovieDTO(query.getSingleResult());
             return movie;
