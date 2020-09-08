@@ -125,7 +125,10 @@ public class MovieFacade {
     public Movie addMovie(String title, String director, int runtime, int releaseYear) {
         EntityManager em = emf.createEntityManager();
         Movie movie = new Movie(title, director, runtime, releaseYear);
+        em.getTransaction().begin();
         em.persist(movie);
+        em.getTransaction().commit();
+        em.close();
         return movie;
     }
             
