@@ -6,6 +6,20 @@
     </head>
     <body>
         <h1>Change or remove this page</h1>
-        <h2>This page has been updated again</h2>
+        <h3>Add movie</h3>
+        <form action="api/movie/add" method="GET">
+            <input type="text" name="title" placeholder="title">
+            <input type="text" name="director" placeholder="director">
+            <input type="number" name="runtime" placeholder="runtime">
+            <input type="number" name="year" placeholder="year">
+            <input type="submit" >
+        </form>
+        <br>
+        <a href="api/movie/all">Show all Movies</a>
+        <br>
+        <a href="api/movie/count">Get movie count</a>
+        <br>
+        
+        
     </body>
 </html>
